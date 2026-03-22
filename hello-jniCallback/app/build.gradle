@@ -1,29 +1,66 @@
+// ============================================================
+// 【Gradle 插件配置】
+// ============================================================
+// plugins 块声明此模块使用的 Gradle 插件
 plugins {
+    // 【Android 应用插件】
+    // 使用项目自定义的 convention 插件，封装了通用配置
     id "ndksamples.android.application"
 }
 
+// ============================================================
+// 【Android 构建设置】
+// ============================================================
 android {
+    // 【命名空间】
+    // 定义应用的包名空间，用于生成 R 类和 BuildConfig
     namespace 'com.example.hellojnicallback'
 
+    // 【默认配置】
     defaultConfig {
+        // 【应用 ID】
+        // 应用的唯一标识符
         applicationId 'com.example.hellojnicallback'
+        
+        // 【版本号】
+        // versionCode: 内部版本号，每次发布递增
         versionCode 1
+        
+        // 【版本名称】
+        // 面向用户的版本字符串
         versionName "1.0"
     }
 
+    // 【外部 Native 构建设置】
+    // 配置 CMake 编译 C++ 代码
     externalNativeBuild {
         cmake {
+            // CMake 构建脚本路径
             path "src/main/cpp/CMakeLists.txt"
         }
     }
 
+    // 【构建特性】
     buildFeatures {
+        // 【Prefab 库发布】
+        // 启用 Prefab 功能，允许发布 C++ 库给其他模块
         prefab true
     }
 }
 
+// ============================================================
+// 【依赖配置】
+// ============================================================
 dependencies {
+    // 【项目内部模块依赖】
+    // base 模块提供日志、工具宏等通用功能
     implementation project(":base")
+    
+    // 【AndroidX AppCompat】
+    // 提供向后兼容的 Android 组件
     implementation libs.appcompat
+    
+    // 【ConstraintLayout】
+    // 灵活的布局系统
     implementation libs.androidx.constraintlayout
 }

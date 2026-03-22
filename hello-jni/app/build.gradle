@@ -1,34 +1,97 @@
+// ============================================================
+// 【Gradle 插件配置】
+// ============================================================
+// plugins 块声明此模块使用的 Gradle 插件
+// 这些插件定义了构建 Android 应用的能力和任务
 plugins {
+    // 【Android 应用插件】
+    // id "ndksamples.android.application" 是项目自定义的 convention 插件
+    // 位于 build-logic/ 目录，封装了 Android 应用的通用配置
+    // 它内部应用了 com.android.application 插件
     id "ndksamples.android.application"
+    
+    // 【Kotlin Android 插件】
+    // 启用 Kotlin 语言支持，包含 Kotlin 标准库和 Android 扩展
     id "ndksamples.android.kotlin"
 }
 
+// ============================================================
+// 【Android 构建设置】
+// ============================================================
 android {
+    // 【命名空间】
+    // 定义应用的包名空间，用于生成 R 类和 BuildConfig 类
+    // 替代了以前 AndroidManifest.xml 中的 package 属性
     namespace 'com.example.hellojni'
 
+    // 【默认配置】
+    // 应用于所有构建变体（debug/release）的基础配置
     defaultConfig {
+        // 【应用 ID】
+        // 应用的唯一标识符，发布到 Google Play 后不可更改
+        // 格式：反向域名风格，如 com.company.app
         applicationId 'com.example.hellojni'
+        
+        // 【版本号】
+        // versionCode: 内部版本号，整数，每次发布必须递增
+        // Google Play 根据此值判断是否有新版本
         versionCode 1
+        
+        // 【版本名称】
+        // 面向用户的版本字符串，如 "1.0.0"、"2.1-beta"
+        // 可以包含任意字符串，仅用于显示
         versionName "1.0"
     }
 
+    // 【外部 Native 构建设置】
+    // 配置 NDK/CMake 构建系统
     externalNativeBuild {
+        // 【CMake 配置】
+        // 指定 CMake 构建脚本的路径
+        // CMake 会编译 C/C++ 代码生成 .so 库文件
         cmake {
+            // CMakeLists.txt 是 CMake 的构建脚本
+            // 定义了如何编译 C++ 源文件、链接库等
             path "src/main/cpp/CMakeLists.txt"
         }
     }
 
+    // 【构建特性】
+    // 启用 Android Gradle Plugin 的各种构建功能
+    
+    // 【ViewBinding 视图绑定】
+    // 自动生成绑定类，替代 findViewById
+    // 优点：编译时类型安全、空安全、性能更好
     buildFeatures {
         viewBinding true
     }
 
+    // 【Prefab 库发布】
+    // 启用 Prefab 功能，允许将 native 库发布给其他模块使用
+    // 本示例中 base 模块使用 Prefab 发布 C++ 库
+    // 其他模块可以通过 find_package(base) 使用它
     buildFeatures {
         prefab true
     }
 }
 
+// ============================================================
+// 【依赖配置】
+// ============================================================
 dependencies {
+    // 【项目内部模块依赖】
+    // :base 是项目根目录下的 base 模块
+    // 提供日志、工具宏等通用 C++ 功能
+    // 通过 Prefab 导出 C++ 头文件和库
     implementation project(":base")
+    
+    // 【AndroidX AppCompat】
+    // 提供向后兼容的 Android 组件和主题
+    // libs.appcompat 引用自 gradle/libs.versions.toml 版本目录
     implementation libs.appcompat
+    
+    // 【ConstraintLayout 约束布局】
+    // 灵活的布局系统，通过约束条件定位视图
+    // 比传统布局（LinearLayout、RelativeLayout）性能更好
     implementation libs.androidx.constraintlayout
 }
